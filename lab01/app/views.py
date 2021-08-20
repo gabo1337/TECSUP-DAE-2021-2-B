@@ -18,4 +18,4 @@ def resta(request, num1, num2):
 def multiplicacion(request, num1, num2):
     multiplicacion = num1 * num2
     resultado = str(multiplicacion)
-    return HttpResponse(str(num1)+"-"+str(num2)+"= "+resultado)
+    return HttpResponse(str(num1)+"*"+str(num2)+"= "+resultado)
