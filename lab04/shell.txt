@@ -1,0 +1,95 @@
+Python 3.7.9 (tags/v3.7.9:13c94747c7, Aug 17 2020, 18:58:18) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+>>> from recetas.models import Autor,Receta, Comentario
+>>> a = Autor(nombre='Javier Perez', email = 'eperez@gmail.com')
+>>> a.save()
+>>> Autor.objects.all()
+<QuerySet [<Autor: javier Perez>]>
+>>> primer = Autor.objects.get(pk=1) 
+>>> primer.email
+'eperez@gmail.com'
+
+r1 = Receta.objects.create(
+... titulo = 'Huevo frito',
+... ingredientes = 'huevo,sal,aceite',
+... preparacion='calentar la sarten y bla bla bla' ,
+... autor=primer)
+>>> Receta.objects.all()
+<QuerySet [<Receta: Huevo frito>]>z
+>>> c1 = Comentario.objects.create(
+... receta=r1,
+... texto = 'un clasico para el desayuno')
+>>> Comentario.objects.all()
+<QuerySet [<Comentario: un clasico para el desayuno>]>
+>>> r2 = Receta.objects.create(
+... titulo='agua hervida',
+... ingredientes='agua',
+... preparacion = 'poner la tetera en el bla bla bla', 
+... autor = primer) 
+>>> Receta.objects.all()
+<QuerySet [<Receta: Huevo frito>, <Receta: agua hervida>]>
+
+//exclucion de recetas que no empiecen con a 
+Receta.objects.exclude(ingredientes__startswith='a')  
+<QuerySet [<Receta: Huevo frito>]>
+
+//cuando la preparacion tenga la palabra tetera 
+Receta.objects.filter(preparacion__contains='tetera') 
+<QuerySet [<Receta: agua hervida>]>
+
+//ordenar alfabeticamente 
+Receta.objects.order_by('titulo')                       
+<QuerySet [<Receta: agua hervida>, <Receta: Huevo frito>]>
+
+//ordenar alfabeticamente al revez osea de Z a A
+>>> Receta.objects.order_by('titulo').reverse()
+<QuerySet [<Receta: Huevo frito>, <Receta: agua hervida>]>
+ 
+//filtrar los comentarios de la primera receta 
+>>> Comentario.objects.filter(receta=r1) 
+<QuerySet [<Comentario: un clasico para el desayuno>]>
+
+//filtrar comentarios de la segunda receta esta no tiene comentarios
+>>> Comentario.objects.filter(receta=r2) 
+<QuerySet []>
+
+//actualizacion de la priemra receta
+>>> Receta.objects.filter(titulo='huevo frito').update(titulo='Huevito frito')
+1
+>>> Receta.objects.all()
+<QuerySet [<Receta: Huevito frito>, <Receta: agua hervida>]>
+
+//crear comentarios y contar los comentarios de la primera receta
+>>> c2 = Comentario.objects.create(
+... receta=r1,
+... texto='para pasar el hambre')
+>>> Comentario.objects.filter(receta=r1).count()
+2
+
+//contar los comentarios de la segunda receta 
+Comentario.objects.filter(receta=r2).count() 
+0
+
+//crear comentarios de la segunda receta y llamarlo
+c3 = Comentario.objects.create(
+... receta=r2,
+... texto='receta sin sentido')
+>>> Comentario.objects.filter(receta=r2) 
+<QuerySet [<Comentario: receta sin sentido>]>
+
+//eliminar el comentario de la segunda receta
+>>> c3.delete()
+(1, {'recetas.Comentario': 1})
+>>> Comentario.objects.filter(receta=r2)
+<QuerySet []> 
+
+
+//mostrar el autor que creo la receta 
+>>> Receta.objects.get(titulo='agua hervida').autor.nombre
+'Javier Perez
+
+//mostrar el gmail del autor que creo la receta
+Receta.objects.get(titulo='agua hervida').autor.email 
+'eperez@gmail.com'
